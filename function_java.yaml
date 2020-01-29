@@ -1,0 +1,20 @@
+apiVersion: kubeless.io/v1beta1
+kind: Function
+metadata:
+  name: hello
+spec:
+  handler: Foo.foo
+  runtime: java1.8
+  function: |
+      package io.kubeless;
+
+      import io.kubeless.Event;
+      import io.kubeless.Context;
+
+      public class Foo {
+          public String foo(io.kubeless.Event event, io.kubeless.Context context) {
+              System.out.println(event.Data);
+
+              return "You send: " + event.Data;
+          }
+      }

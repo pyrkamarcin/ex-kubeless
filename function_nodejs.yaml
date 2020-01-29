@@ -1,0 +1,13 @@
+apiVersion: kubeless.io/v1beta1
+kind: Function
+metadata:
+  name: hello
+spec:
+  handler: handler.hello
+  runtime: nodejs8
+  function: |
+      module.exports = {
+        hello: function (event, context) {
+          return(event.data)
+        }
+      }

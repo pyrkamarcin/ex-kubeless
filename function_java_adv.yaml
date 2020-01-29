@@ -1,0 +1,56 @@
+apiVersion: kubeless.io/v1beta1
+kind: Function
+metadata:
+  name: hello
+spec:
+  handler: Handler.foo  
+  function-content-type: text
+  runtime: java1.8
+  function: |
+      package io.kubeless;
+
+      import io.kubeless.Event;
+      import io.kubeless.Context;
+
+      public class Foo {
+          public String foo(io.kubeless.Event event, io.kubeless.Context context) {
+              System.out.println(event.Data);
+
+              return "You send: " + event.Data;
+          }
+      }
+      
+  deployment:
+    spec:
+      template:
+        spec:
+          containers:
+          - env:
+            - name: FOO
+              value: bar
+            resources:
+              limits:
+                cpu: 100m
+                memory: 100Mi
+              requests:
+                cpu: 100m
+                memory: 100Mi
+  horizontalPodAutoscaler:
+    apiVersion: autoscaling/v2beta1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: hello
+      namespace: default
+    spec:
+      maxReplicas: 3
+      metrics:
+      - resource:
+          name: cpu
+          targetAverageUtilization: 70
+        type: Resource
+      minReplicas: 1
+      scaleTargetRef:
+        apiVersion: apps/v1beta1
+        kind: Deployment
+        name: hello
+  
